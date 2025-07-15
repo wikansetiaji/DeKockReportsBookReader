@@ -9,11 +9,7 @@ class SimpleBookReaderPage extends StatefulWidget {
   SimpleBookReaderPage({super.key});
 
   final numberOfPage = 31;
-  final List<String> bookIds = [
-    "dutch",
-    "indonesian",
-    "english",
-  ];
+  final List<String> bookIds = ["dutch", "indonesian", "english"];
 
   @override
   State<SimpleBookReaderPage> createState() => _SimpleBookReaderPageState();
@@ -38,6 +34,10 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
   bool _isNavigating = false; // cater bookfx bug
   String bookId = "dutch";
 
+  String selectedLanguage = 'Dutch (Original)';
+
+  final List<String> languages = ['Dutch (Original)', 'English', 'Bahasa'];
+
   @override
   void initState() {
     super.initState();
@@ -58,9 +58,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
 
   Future<void> _loadFirstImageAspectRatio() async {
     try {
-      final ByteData data = await rootBundle.load(
-        'assets/$bookId/0.webp',
-      );
+      final ByteData data = await rootBundle.load('assets/$bookId/0.webp');
       final Uint8List bytes = data.buffer.asUint8List();
       final Image image = Image.memory(bytes);
       final completer = Completer<Size>();
@@ -265,8 +263,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
                                               child: AbsorbPointer(
                                                 absorbing: _isZoomed,
                                                 child: BookFx(
-                                                  currentBgColor:
-                                                      Colors.white,
+                                                  currentBgColor: Colors.white,
                                                   size: Size(
                                                     bookWidth,
                                                     bookHeight,
@@ -320,6 +317,8 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
                 Row(
                   children: [
                     Spacer(),
+                    dropdownWithoutAnimation(),
+                    SizedBox(width: 20.sc),
                     Text(
                       '${(_scale * 100).toStringAsFixed(0)}%',
                       style: TextStyle(
@@ -432,10 +431,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
             SizedBox(
               width: imageWidth,
               height: imageHeight,
-              child: Image.asset(
-                'assets/$bookId/0.webp',
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset('assets/$bookId/0.webp', fit: BoxFit.cover),
             ),
           ],
         ),
@@ -456,23 +452,25 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
             SizedBox(
               width: imageWidth,
               height: imageHeight,
-              child: leftImageIndex < widget.numberOfPage
-                  ? Image.asset(
-                      'assets/$bookId/$leftImageIndex.webp',
-                      fit: BoxFit.cover,
-                    )
-                  : Container(color: const Color(0xFF282828)),
+              child:
+                  leftImageIndex < widget.numberOfPage
+                      ? Image.asset(
+                        'assets/$bookId/$leftImageIndex.webp',
+                        fit: BoxFit.cover,
+                      )
+                      : Container(color: const Color(0xFF282828)),
             ),
             // Right image
             SizedBox(
               width: imageWidth,
               height: imageHeight,
-              child: rightImageIndex < widget.numberOfPage
-                  ? Image.asset(
-                      'assets/$bookId/$rightImageIndex.webp',
-                      fit: BoxFit.cover,
-                    )
-                  : Container(color: const Color(0xFF282828)),
+              child:
+                  rightImageIndex < widget.numberOfPage
+                      ? Image.asset(
+                        'assets/$bookId/$rightImageIndex.webp',
+                        fit: BoxFit.cover,
+                      )
+                      : Container(color: const Color(0xFF282828)),
             ),
           ],
         ),
@@ -495,6 +493,89 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
         foregroundColor: Colors.white,
       ),
       child: Icon(icon, size: 24.sc),
+    );
+  }
+
+  Widget dropdownWithoutAnimation() {
+    return SizedBox(
+      height: 40.sc,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 85, 85, 85),
+          borderRadius: BorderRadius.circular(
+            10.sc,
+          ), // Optional: for rounded corners
+        ),
+        child: Theme(
+          data: ThemeData(
+            textTheme: TextTheme(
+              bodyMedium: TextStyle(
+                color: Colors.white,
+                fontSize: 16.sc,
+                fontFamily: 'PublicSans',
+              ),
+            ),
+            // Disable splash and highlight effects
+            splashFactory: NoSplash.splashFactory,
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              padding: EdgeInsets.symmetric(horizontal: 8.sc, vertical: 0.sc),
+              value: selectedLanguage,
+              icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+              iconSize: 0.sc,
+              elevation: 0,
+              dropdownColor: Colors.grey[700],
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedLanguage = newValue!;
+
+                  if (newValue == 'Dutch (Original)') {
+                    bookId = 'dutch';
+                  } else if (newValue == 'English') {
+                    bookId = 'english';
+                  } else if (newValue == 'Bahasa') {
+                    bookId = 'indonesian';
+                  }
+                });
+              },
+              items:
+                  languages.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.sc,
+                          vertical: 8.sc,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.translate,
+                              color: Colors.white,
+                              size: 20.sc,
+                            ),
+                            SizedBox(width: 12.sc),
+                            Text(
+                              value,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.sc,
+                                fontFamily: 'PublicSans',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
