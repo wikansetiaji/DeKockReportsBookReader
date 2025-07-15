@@ -1,0 +1,38 @@
+name: Build Windows .exe
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # allows manual trigger from GitHub UI
+
+jobs:
+  build:
+    name: Build Windows App
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.29.3"
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+        shell: bash
+
+      - name: Install dependencies
+        run: flutter pub get
+        shell: bash
+
+      - name: Build Windows executable
+        run: flutter build windows
+        shell: bash
+
+      - name: Upload Release folder as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: build/windows/x64/runner/Release
