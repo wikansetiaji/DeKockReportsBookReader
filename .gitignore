@@ -43,3 +43,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Flutter iOS artifacts
+build/
+Flutter.xcframework/
+App.xcframework/
+FlutterPluginRegistrant.xcframework/
+*.dSYM
