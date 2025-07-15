@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: SimpleBookReaderPage(book: Book(id: "tjehaja_sijang_1", title: "Tjehaja Sijang", numberOfPage: 4)),
+      home: SimpleBookReaderPage(book: Book(id: "tjehaja_sijang_1", title: "Tjehaja Sijang", numberOfPage: 5)),
     );
   }
 }

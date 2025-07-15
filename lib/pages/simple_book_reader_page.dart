@@ -24,6 +24,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
   bool isLoading = true;
   Size? firstImageSize;
   int currentPageIndex = 0;
+  late int totalPages; // Total number of display pages (each showing 2 images)
   final TransformationController _transformationController =
       TransformationController();
   double _scale = 1.0;
@@ -36,6 +37,10 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
   void initState() {
     super.initState();
     bookController = BookController();
+
+    // Calculate total pages needed to show all images (2 per page)
+    totalPages = (widget.book.numberOfPage / 2).ceil();
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -81,14 +86,15 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
       if (mounted) {
         setState(() {
           firstImageSize = size;
-          imgAspectRatio = size.width / size.height;
+          // Adjust aspect ratio for dual page layout (2 images side by side)
+          imgAspectRatio = (size.width * 2) / size.height;
           isLoading = false;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          imgAspectRatio = 1;
+          imgAspectRatio = 2; // Default to 2:1 ratio for dual page
           isLoading = false;
         });
       }
@@ -142,7 +148,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
 
   void goToNextPage() {
     if (_isNavigating) return; // cater bookfx bug
-    if (currentPageIndex + 1 < widget.book.numberOfPage) {
+    if (currentPageIndex + 1 < totalPages) {
       bookController.next();
       setState(() {
         _isNavigating = true;
@@ -265,8 +271,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
                                                     bookWidth,
                                                     bookHeight,
                                                   ),
-                                                  pageCount:
-                                                      widget.book.numberOfPage,
+                                                  pageCount: totalPages,
                                                   currentPage:
                                                       (index) => _buildBookPage(
                                                         index,
@@ -376,7 +381,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
                           vertical: 10.sc,
                         ),
                         child: Text(
-                          '${currentPageIndex + 1} / ${widget.book.numberOfPage}',
+                          '${currentPageIndex + 1} / $totalPages',
                           style: TextStyle(
                             fontFamily: 'PublicSans',
                             color: Color.fromARGB(255, 255, 255, 255),
@@ -390,7 +395,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
                       context,
                       icon: Icons.chevron_right,
                       onPressed: goToNextPage,
-                      enabled: currentPageIndex + 1 < widget.book.numberOfPage,
+                      enabled: currentPageIndex + 1 < totalPages,
                     ),
                     Spacer(),
                   ],
@@ -404,14 +409,56 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
     );
   }
 
-  Widget _buildBookPage(int index, double width, double height) {
+  Widget _buildBookPage(int pageIndex, double width, double height) {
+    // Calculate which actual image indices this page should show
+    final int leftImageIndex = pageIndex * 2 - 1;
+    final int rightImageIndex = pageIndex * 2;
+
+    // Calculate individual image dimensions (each takes half the width)
+    final double imageWidth = width / 2;
+    final double imageHeight = height;
+
     return SizedBox(
-      key: ValueKey(index),
+      key: ValueKey(pageIndex),
       width: width,
       height: height,
-      child: Image.asset(
-        'assets/${widget.book.id}/$index.webp',
-        fit: BoxFit.cover,
+      child: Row(
+        children: [
+          // Left image
+          if (leftImageIndex >= 0)
+            SizedBox(
+              width: imageWidth,
+              height: imageHeight,
+              child: Image.asset(
+                'assets/${widget.book.id}/$leftImageIndex.webp',
+                fit: BoxFit.cover,
+              ),
+            )
+          else
+            // Empty space if no right image (for odd number of total images)
+            SizedBox(
+              width: imageWidth,
+              height: imageHeight,
+              child: Container(color: const Color(0xFF282828)),
+            ),
+          // Right image (if it exists)
+          if (rightImageIndex < widget.book.numberOfPage)
+            SizedBox(
+              width: imageWidth,
+              height: imageHeight,
+              child: Image.asset(
+                'assets/${widget.book.id}/$rightImageIndex.webp',
+                fit: BoxFit.cover,
+              ),
+            )
+          else
+            // Empty space if no right image (for odd number of total images)
+            SizedBox(
+              width: imageWidth,
+              height: imageHeight,
+              child: Container(color: const Color.fromARGB(255, 214, 187, 135)),
+            ),
+        ],
       ),
     );
   }
