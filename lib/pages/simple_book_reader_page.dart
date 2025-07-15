@@ -24,7 +24,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
   bool isLoading = true;
   Size? firstImageSize;
   int currentPageIndex = 0;
-  late int totalPages; // Total number of display pages (each showing 2 images)
+  late int totalPages; // Total number of display pages
   final TransformationController _transformationController =
       TransformationController();
   double _scale = 1.0;
@@ -38,8 +38,8 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
     super.initState();
     bookController = BookController();
 
-    // Calculate total pages needed to show all images (2 per page)
-    totalPages = (widget.book.numberOfPage / 2).ceil();
+    // Calculate total pages: 1 for first page (blank + first image) + remaining pages paired
+    totalPages = 1 + ((widget.book.numberOfPage - 1) / 2).ceil();
 
     _animationController = AnimationController(
       vsync: this,
@@ -410,57 +410,74 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
   }
 
   Widget _buildBookPage(int pageIndex, double width, double height) {
-    // Calculate which actual image indices this page should show
-    final int leftImageIndex = pageIndex * 2 - 1;
-    final int rightImageIndex = pageIndex * 2;
-
     // Calculate individual image dimensions (each takes half the width)
     final double imageWidth = width / 2;
     final double imageHeight = height;
 
-    return SizedBox(
-      key: ValueKey(pageIndex),
-      width: width,
-      height: height,
-      child: Row(
-        children: [
-          // Left image
-          if (leftImageIndex >= 0)
-            SizedBox(
-              width: imageWidth,
-              height: imageHeight,
-              child: Image.asset(
-                'assets/${widget.book.id}/$leftImageIndex.webp',
-                fit: BoxFit.cover,
-              ),
-            )
-          else
-            // Empty space if no right image (for odd number of total images)
+    if (pageIndex == 0) {
+      // First page: blank left side, first image on right
+      return SizedBox(
+        key: ValueKey(pageIndex),
+        width: width,
+        height: height,
+        child: Row(
+          children: [
+            // Left side: blank
             SizedBox(
               width: imageWidth,
               height: imageHeight,
               child: Container(color: const Color(0xFF282828)),
             ),
-          // Right image (if it exists)
-          if (rightImageIndex < widget.book.numberOfPage)
+            // Right side: first image (index 0)
             SizedBox(
               width: imageWidth,
               height: imageHeight,
               child: Image.asset(
-                'assets/${widget.book.id}/$rightImageIndex.webp',
+                'assets/${widget.book.id}/0.webp',
                 fit: BoxFit.cover,
               ),
-            )
-          else
-            // Empty space if no right image (for odd number of total images)
+            ),
+          ],
+        ),
+      );
+    } else {
+      // For subsequent pages: calculate actual image indices
+      // Page 1 shows images 1,2 | Page 2 shows images 3,4 | etc.
+      final int leftImageIndex = (pageIndex - 1) * 2 + 1;
+      final int rightImageIndex = (pageIndex - 1) * 2 + 2;
+
+      return SizedBox(
+        key: ValueKey(pageIndex),
+        width: width,
+        height: height,
+        child: Row(
+          children: [
+            // Left image
             SizedBox(
               width: imageWidth,
               height: imageHeight,
-              child: Container(color: const Color.fromARGB(255, 214, 187, 135)),
+              child: leftImageIndex < widget.book.numberOfPage
+                  ? Image.asset(
+                      'assets/${widget.book.id}/$leftImageIndex.webp',
+                      fit: BoxFit.cover,
+                    )
+                  : Container(color: const Color(0xFF282828)),
             ),
-        ],
-      ),
-    );
+            // Right image
+            SizedBox(
+              width: imageWidth,
+              height: imageHeight,
+              child: rightImageIndex < widget.book.numberOfPage
+                  ? Image.asset(
+                      'assets/${widget.book.id}/$rightImageIndex.webp',
+                      fit: BoxFit.cover,
+                    )
+                  : Container(color: const Color(0xFF282828)),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Widget _buildNavButton(
