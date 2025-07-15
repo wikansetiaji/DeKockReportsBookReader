@@ -3,13 +3,17 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bookfx/bookfx.dart';
-import 'package:de_kock_reports_reader/models/book.dart';
 import 'package:de_kock_reports_reader/service/size_config.dart';
 
 class SimpleBookReaderPage extends StatefulWidget {
-  final Book book;
+  SimpleBookReaderPage({super.key});
 
-  const SimpleBookReaderPage({super.key, required this.book});
+  final numberOfPage = 31;
+  final List<String> bookIds = [
+    "dutch",
+    "indonesian",
+    "english",
+  ];
 
   @override
   State<SimpleBookReaderPage> createState() => _SimpleBookReaderPageState();
@@ -32,6 +36,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
   double _mediaWidth = 0;
   double _mediaHeight = 0;
   bool _isNavigating = false; // cater bookfx bug
+  String bookId = "dutch";
 
   @override
   void initState() {
@@ -39,7 +44,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
     bookController = BookController();
 
     // Calculate total pages: 1 for first page (blank + first image) + remaining pages paired
-    totalPages = 1 + ((widget.book.numberOfPage - 1) / 2).ceil();
+    totalPages = 1 + ((widget.numberOfPage - 1) / 2).ceil();
 
     _animationController = AnimationController(
       vsync: this,
@@ -54,7 +59,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
   Future<void> _loadFirstImageAspectRatio() async {
     try {
       final ByteData data = await rootBundle.load(
-        'assets/${widget.book.id}/0.webp',
+        'assets/$bookId/0.webp',
       );
       final Uint8List bytes = data.buffer.asUint8List();
       final Image image = Image.memory(bytes);
@@ -261,12 +266,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
                                                 absorbing: _isZoomed,
                                                 child: BookFx(
                                                   currentBgColor:
-                                                      const Color.fromARGB(
-                                                        255,
-                                                        214,
-                                                        187,
-                                                        135,
-                                                      ),
+                                                      Colors.white,
                                                   size: Size(
                                                     bookWidth,
                                                     bookHeight,
@@ -433,7 +433,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
               width: imageWidth,
               height: imageHeight,
               child: Image.asset(
-                'assets/${widget.book.id}/0.webp',
+                'assets/$bookId/0.webp',
                 fit: BoxFit.cover,
               ),
             ),
@@ -456,9 +456,9 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
             SizedBox(
               width: imageWidth,
               height: imageHeight,
-              child: leftImageIndex < widget.book.numberOfPage
+              child: leftImageIndex < widget.numberOfPage
                   ? Image.asset(
-                      'assets/${widget.book.id}/$leftImageIndex.webp',
+                      'assets/$bookId/$leftImageIndex.webp',
                       fit: BoxFit.cover,
                     )
                   : Container(color: const Color(0xFF282828)),
@@ -467,9 +467,9 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
             SizedBox(
               width: imageWidth,
               height: imageHeight,
-              child: rightImageIndex < widget.book.numberOfPage
+              child: rightImageIndex < widget.numberOfPage
                   ? Image.asset(
-                      'assets/${widget.book.id}/$rightImageIndex.webp',
+                      'assets/$bookId/$rightImageIndex.webp',
                       fit: BoxFit.cover,
                     )
                   : Container(color: const Color(0xFF282828)),

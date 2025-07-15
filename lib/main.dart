@@ -1,4 +1,3 @@
-import 'package:de_kock_reports_reader/models/book.dart';
 import 'package:de_kock_reports_reader/pages/simple_book_reader_page.dart';
 import 'package:de_kock_reports_reader/service/size_config.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: SimpleBookReaderPage(book: Book(id: "tjehaja_sijang_1", title: "Tjehaja Sijang", numberOfPage: 4)),
+      home: SimpleBookReaderPage(),
     );
   }
 }
