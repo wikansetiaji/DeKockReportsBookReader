@@ -230,7 +230,7 @@ class _SimpleBookReaderPageState extends State<SimpleBookReaderPage>
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 40.0.sc,
-                                    vertical: 20.0.sc,
+                                    vertical: 0.0.sc,
                                   ),
                                   child: LayoutBuilder(
                                     builder: (context, constraints) {

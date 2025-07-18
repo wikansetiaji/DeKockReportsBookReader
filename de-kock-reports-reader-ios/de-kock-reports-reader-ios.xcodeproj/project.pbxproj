@@ -8,25 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		7A04DAB52E2646C300A06536 /* App.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A04DAB12E2646BE00A06536 /* App.xcframework */; };
-		7A04DAB62E2646C300A06536 /* App.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A04DAB12E2646BE00A06536 /* App.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A04DAB82E2646C400A06536 /* Flutter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A04DAB22E2646BE00A06536 /* Flutter.xcframework */; };
-		7A04DAB92E2646C400A06536 /* Flutter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A04DAB22E2646BE00A06536 /* Flutter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		7A04DAB72E2646C300A06536 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				7A04DAB92E2646C400A06536 /* Flutter.xcframework in Embed Frameworks */,
-				7A04DAB62E2646C300A06536 /* App.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		7A04DA992E2643BC00A06536 /* de-kock-reports-reader-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "de-kock-reports-reader-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,7 +79,6 @@
 				7A04DA952E2643BC00A06536 /* Sources */,
 				7A04DA962E2643BC00A06536 /* Frameworks */,
 				7A04DA972E2643BC00A06536 /* Resources */,
-				7A04DAB72E2646C300A06536 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
